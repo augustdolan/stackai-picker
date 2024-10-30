@@ -1,3 +1,8 @@
+# TODO: 
+- [ ] custom error page
+- [ ] add npx auth secret to build on vercel
+- [ ] remove hydration from top of app, this does not work with app router
+- [ ] add time based revalidation
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
