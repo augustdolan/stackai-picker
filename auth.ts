@@ -28,8 +28,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const authResponse = await fetch(`${process.env.STACKAI_AUTH_BACKEND_URL}/auth/v1/token?grant_type=password`, {
           method: "POST",
           body: JSON.stringify({
-            email: credentials.email || process.env.DEFAULT_EMAIL,
-            password: credentials.password || process.env.DEFAULT_PASSWORD, // these defaults likely do not work
+            email: credentials.email,
+            password: credentials.password,
             gotrue_meta_security: {},
           }),
           headers: {
