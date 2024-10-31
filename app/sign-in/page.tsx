@@ -1,20 +1,17 @@
-import { Button } from "@/components/ui/button";
 import { signIn } from "@/auth"
-import SignIn from "@/components/SignIn";
+import { Button } from "@/components/ui/button"
 
-// export default function SignInPage() {
-//   async function signInWithDefault() {
-//     "use server"
-//     await signIn("credentials", { redirectTo: "/" });
-//   }
-//   return (
-//     <Button onClick={() => {
-//       signInWithDefault()
-//     }}>Default Login</Button>
-//   )
-// }
-
-export default function SignInPage() {
-  return <SignIn />;
+export default function SignIn() {
+  return (
+    <form
+      className="flex justify-center h-full"
+      action={async () => {
+        "use server"
+        await signIn("credentials", { redirectTo: "/" })
+      }}
+    >
+      <Button className="self-center" type="submit">Sign in</Button>
+    </form>
+  )
 }
 

@@ -39,6 +39,10 @@ export type FileDriveResource = DriveResourceBase & {
 
 export type DriveResource = DirectoryDriveResource | FileDriveResource;
 
+export type ResourcesByDirectory = {
+  resourceData: DriveResource,
+  directoryEntries: Record<string, ResourcesByDirectory>,
+}
 export function isDirectory(driveResource: DriveResource): driveResource is DirectoryDriveResource {
   return driveResource.inode_type === "directory";
 }

@@ -1,5 +1,5 @@
 import { stackAiFetch } from "@/app/api/utils"
-import { ConnectionInfo, DriveResource } from "@/types/googleDrive";
+import { ConnectionInfo, DriveResource, ResourcesByDirectory, ResourcesByDirectory } from "@/types/googleDrive";
 import { getConnection } from "./utils";
 export async function getAllDriveResources() {
   const [connection]: ConnectionInfo[] = await getConnection();
@@ -33,8 +33,9 @@ async function fetchInnerResources(resources: DriveResource[], connection: Conne
 }
 
 // non-ideal organization
-function organizeByDirectory(resources: DriveResource[]) {
-  const resourcesByDirectory = { directoryEntries: {} };
+function organizeByDirectory(resources: DriveResource[]): ResourcesByDirectory {
+  const resourceData = {} as DriveResource;
+  const resourcesByDirectory: ResourcesByDirectory = { resourceData, directoryEntries: {} };
   resources.forEach(resource => {
     const subPaths = resource.inode_path.path.split("/")
     let currentPath = resourcesByDirectory.directoryEntries
@@ -57,4 +58,3 @@ function organizeByDirectory(resources: DriveResource[]) {
   })
   return resourcesByDirectory;
 }
-export type ResourcesByDirectory = ReturnType<typeof organizeByDirectory>
