@@ -5,15 +5,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     jwt({ user, token }) {
       if (user) {
+        // @ts-expect-error needed to extend the session, no quick way to extend type
         token.user = { id: user.user.id }
+        // @ts-expect-error needed to extend the session, no quick way to extend type
         token.accessToken = user.access_token
+        // @ts-expect-error needed to extend the session, no quick way to extend type
         token.orgId = user.org_id
       }
       return token;
     },
     async session({ session, token }) {
+      // @ts-expect-error needed to extend the session, no quick way to extend type
       session.orgId = token.orgId;
+      // @ts-expect-error needed to extend the session, no quick way to extend type
       session.user = { id: token.user.id };
+      // @ts-expect-error needed to extend the session, no quick way to extend type
       session.accessToken = token.accessToken;
       return session;
     }

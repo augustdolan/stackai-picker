@@ -8,7 +8,7 @@
 
 
 ## Reasoning
-The majority of the stack was selected as they were listed in the Tech Stack section. However, there are two key differences: I did not use Tanstack Query and I did not manually resolve compatability for Shadcn with the latest stable of Next (v15). While I originally did use react query, AuthJS proved unsustainable with the `pages` router when using the `Credentials` provider. This provider is purposefully under-developed, and required additional piping to store the accessToken for. Bouncing between the pages and app router meant more time spent on restructuring code unfortunately.
+The majority of the stack was selected as they were listed in the Tech Stack section. However, there are two key differences: I did not use Tanstack Query and I did not manually resolve compatability for Shadcn with the latest stable of Next (v15). While I originally did use react query, AuthJS proved unsustainable with the `pages` router when using the `Credentials` provider. This provider is purposefully under-developed, and required additional piping to store the accessToken for. Also, this underdevelopment meant a wealth of type errors due to having to shim the user to get the information I needed. This caused build problems. Bouncing between the pages and app router meant more time spent on restructuring code unfortunately.
 
 react query was avoided since Next extends `fetch` with caching on the server side, though I needed to turn on caching for calls with the `Authorization` header. There was no need for client side calls in this project. 
 
