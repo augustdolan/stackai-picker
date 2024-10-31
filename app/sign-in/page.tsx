@@ -1,9 +1,8 @@
 "use client"
-import { signIn } from "@/auth"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { useOptimistic, useState } from "react";
+import { useOptimistic } from "react";
 import { Login } from "@/app/api/loginServerAction"
 
 export default function SignIn() {
