@@ -25,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
-        const authResponse = await fetch(`${process.env.STACKAI_BACKEND_URL}/auth/v1/token?grant_type=password`, {
+        const authResponse = await fetch(`${process.env.STACKAI_AUTH_BACKEND_URL}/auth/v1/token?grant_type=password`, {
           method: "POST",
           body: JSON.stringify({
             email: credentials.email || process.env.DEFAULT_EMAIL,

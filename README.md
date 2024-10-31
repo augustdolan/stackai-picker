@@ -3,6 +3,8 @@
 - [ ] add npx auth secret to build on vercel
 - [ ] remove hydration from top of app, this does not work with app router
 - [ ] add time based revalidation
+- [ ] handle when there is no gDrive connection available?
+- [ ] refine directory type
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
