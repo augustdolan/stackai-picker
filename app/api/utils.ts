@@ -7,6 +7,7 @@ export async function stackAiFetch(slug: string, config?: RequestInit) {
     headers: {
       ...config?.headers,
       "Authorization": `Bearer ${session?.accessToken}`,
+      "Content-Type": "application/json",
     }
   })
   const parsed = await response.json();
