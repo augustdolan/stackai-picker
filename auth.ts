@@ -50,7 +50,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
           })
         const parsedOrgInfo = await orgIdResponse.json()
-        console.log("sessionParsed", parsedOrgInfo);
 
         return { ...parsedAuth, org_id: parsedOrgInfo.org_id };
       }

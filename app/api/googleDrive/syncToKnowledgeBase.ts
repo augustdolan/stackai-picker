@@ -28,7 +28,6 @@ export async function syncToKnowledgeBase(selectedResources: Set<string>) {
       cron_job_id: null,
     }),
   })
-  console.log("knowledgeBase", knowledgeBase)
   return knowledgeBase;
 }
 
