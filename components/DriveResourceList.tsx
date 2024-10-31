@@ -7,6 +7,10 @@ import { CheckedChangeHandler, ResourcesByDirectory } from "@/types/googleDrive"
 import { Button } from "./ui/button";
 import { syncToKnowledgeBase } from "@/app/api/googleDrive/syncToKnowledgeBase";
 import GoogleDriveIcon from "./ui/GoogleDriveIcon";
+import { Alert, AlertDescription } from "./ui/alert";
+import { InfoIcon } from "lucide-react";
+import { toast } from "sonner";
+import { Toaster } from "./ui/sonner";
 
 export default function DriveResourceList({ resources }: { resources: ResourcesByDirectory }) {
   const [checked, setChecked] = useState(false)
@@ -64,7 +68,23 @@ export default function DriveResourceList({ resources }: { resources: ResourcesB
         </div>
       </div>
       <div className="border-t w-full pt-2 flex justify-end">
-        <Button disabled={selectedResources.size === 0} onClick={() => { syncToKnowledgeBase(selectedResources) }}>Sync {selectedResources.size}</Button>
+        <Toaster />
+        <div className="flex gap-2">
+          <Alert className="h-10 flex gap-2 bg-slate-100">
+            <div><InfoIcon className="h-4 w-4" /></div>
+            <AlertDescription className="self-center">
+              We recommend selecting as few items as needed.
+            </AlertDescription></Alert>
+          <Button disabled={selectedResources.size === 0} onClick={() => {
+            setSelectedResources(new Set<string>())
+            syncToKnowledgeBase(selectedResources)
+            toast("Success!", {
+              description: "knowledge base created",
+            })
+            // this is not hooked into if there is an error unfortunately
+          }}>Sync {selectedResources.size}</Button>
+
+        </div>
       </div>
     </div>
   )
