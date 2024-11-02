@@ -5,7 +5,7 @@ import { Checkbox } from "./ui/checkbox";
 import { useState } from "react";
 import { CheckedChangeHandler, ResourcesByDirectory } from "@/types/googleDrive";
 import { Button } from "./ui/button";
-import { syncToKnowledgeBase } from "@/app/api/googleDrive/syncToKnowledgeBase";
+import { createKnowledgeBase } from "@/app/api/knowledgeBases";
 import GoogleDriveIcon from "./ui/GoogleDriveIcon";
 import { Alert, AlertDescription } from "./ui/alert";
 import { InfoIcon } from "lucide-react";
@@ -77,7 +77,7 @@ export default function DriveResourceList({ resources }: { resources: ResourcesB
             </AlertDescription></Alert>
           <Button disabled={selectedResources.size === 0} onClick={() => {
             setSelectedResources(new Set<string>())
-            syncToKnowledgeBase(selectedResources)
+            createKnowledgeBase(selectedResources)
             toast("Success!", {
               description: "knowledge base created",
             })

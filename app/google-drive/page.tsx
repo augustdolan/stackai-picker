@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import DriveResourceList from "@/components/DriveResourceList";
-import { getAllDriveResources } from "@/app/api/googleDrive/getAll";
+import { getAllDriveResources } from "@/app/api/googleDriveResources";
 import { auth } from "@/auth";
 export default async function DriveResourceContainer() {
   const session = await auth();
