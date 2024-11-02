@@ -2,7 +2,14 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  pages: {
+    signIn: '/sign-in',
+  },
   callbacks: {
+    // protect pages with auth
+    async authorized({ auth }) {
+      return Boolean(auth);
+    },
     jwt({ user, token }) {
       if (user) {
         // @ts-expect-error needed to extend the session, no quick way to extend type

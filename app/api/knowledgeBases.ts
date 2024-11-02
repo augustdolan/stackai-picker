@@ -1,25 +1,21 @@
 "use server"
-import { stackAiFetch } from "./utils"
-import { getConnection } from "./googleDrive/utils"
+import { getConnections, stackAiFetch } from "@/app/api/utils"
 import { auth } from "@/auth";
 
 const defaultKnowledgeBaseId = "2ee47c79-f0c3-4cc0-af7a-ab2e479969a6";
 
-export async function syncToKnowledgeBase(selectedResources: Set<string>, knowledgeBaseId: string = defaultKnowledgeBaseId) {
+// remove defaulting once KBs are selectable
+// Additionally, note that this only triggers a sync to files you index to the KB, you must index files to the KB first
+export async function syncToKnowledgeBase(knowledgeBaseId: string = defaultKnowledgeBaseId) {
   const session = await auth();
-  const [connection] = await getConnection();
-  const knowledgeBase = await stackAiFetch(`knowledge_bases/sync/trigger/${knowledgeBaseId}/${session?.orgId}`, {
-    method: "POST",
-    body: JSON.stringify({
-      connection_source_ids: Array.from(selectedResources),
-      connection_id: connection.connection_id,
-    }),
+  const syncResponse = await stackAiFetch(`knowledge_bases/sync/trigger/${knowledgeBaseId}/${session?.orgId}`, {
+    method: "GET",
   })
-  return knowledgeBase;
+  return syncResponse;
 }
 
 export async function createKnowledgeBase(selectedResources: Set<string>) {
-  const [connection] = await getConnection();
+  const [connection] = await getConnections();
   const knowledgeBase = await stackAiFetch("knowledge_bases", {
     method: "POST",
     body: JSON.stringify({
@@ -47,3 +43,27 @@ export async function createKnowledgeBase(selectedResources: Set<string>) {
   return knowledgeBase;
 }
 
+export async function updateKnowledgeBase(knowledgeBaseId: string = defaultKnowledgeBaseId, selectedResources: Set<string>) {
+  const [connection] = await getConnections();
+  const knowledgeBase = await stackAiFetch(`knowledge_bases/${knowledgeBaseId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      connection_source_ids: Array.from(selectedResources),
+      connection_id: connection.connection_id,
+      indexing_params: {
+        ocr: false,
+        unstructured: true,
+        embedding_params: {
+          embedding_model: "text-embedding-ada-022",
+          api_key: null,
+        },
+        chunker_params: {
+          chunk_size: 1500,
+          chunk_overlap: 500,
+          chunker: "sentence",
+        }
+      },
+    }),
+  })
+  return knowledgeBase;
+}

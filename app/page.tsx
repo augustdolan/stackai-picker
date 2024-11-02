@@ -6,7 +6,7 @@ export default async function Home() {
   if (!session?.user) {
     redirect('/sign-in');
   } else {
-    redirect('/google-drive')
+    redirect('/connections')
   }
 };
 
