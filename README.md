@@ -21,3 +21,37 @@ Additionally, I am missing the knowledge base functionality. You can create know
 
 # Running the app
 A simple `npm run dev` should do the trick!
+
+# Development
+
+## TODO
+- [ ] deindex for drive docs list
+- [ ] Add syncing of drive docs to knowledge base (kb indexing)
+  - [ ] use Optimistic to update the UI for the user, and stack syncing with create
+- [ ] add synced indicator for synced files
+- [ ] ensure unsynced state is updated as well
+- [ ] ensure caching is properly enabled. Caching should happen for ids, no?
+- [ ] test new redirect from authjs callback
+- [ ] update auth types based on guide
+- [ ] rotate tokens
+
+### If time
+- [ ] sort by date
+- [ ] sort by name
+- [ ] filter by name
+- [ ] search by name
+
+## Notes
+Some of the apis are missing from the spec, so I needed to go to the site to grab them from the network. One of them was confirming the correct `put` for syncing file sources
+
+I went about caching wrong originally. I was concerned with caching the calls to the db, but by putting the ids onto the routes, I can now cache route calls, avoiding the issue with Authorization caching. The auth header caching was likely a data leak issue. Poor form there lol. Lets just use the client side cache for these since they are fully rendered server side. So, the updated routes with slug is to make use of the client router cache
+
+A trickiness is the relationship between knowledge bases and connections, which I assume to be many to many...so...how do we cache with the client router? 
+
+Knowledge base needs to be shimmed in front of connections I suppose?
+
+Caught a bug where an empty directory would cause the app to explode since I was trying to convert a nonexistent property `directoryEntries` into an interable 
+
+stop propogation on click makes it possible to toggle the dropdown and not hit the box, which is not great
+
+context causes all children to rerender...might not be a great solution here
