@@ -10,13 +10,21 @@
 ## Reasoning
 The majority of the stack was selected as they were listed in the Tech Stack section. However, there are two key differences: I did not use Tanstack Query and I did not manually resolve compatability for Shadcn with the latest stable of Next (v15). While I originally did use react query, AuthJS proved unsustainable with the `pages` router when using the `Credentials` provider. This provider is purposefully under-developed, and required additional piping to store the accessToken for. Also, this underdevelopment meant a wealth of type errors due to having to shim the user to get the information I needed. This caused build problems. Bouncing between the pages and app router meant more time spent on restructuring code unfortunately.
 
-react query was avoided since Next extends `fetch` with caching on the server side, though I needed to turn on caching for calls with the `Authorization` header. There was no need for client side calls in this project. 
+Besides tailwind, the stack was new for me (`app` router instead of `pages` router for Next was used). Shadcn proved mostly intuitive and easy. I did need to back away from using the `Form` with `react-hook-form` and the `Accordion` setup. They seemed to not play well together at all. In retrospect, I believe the main issue was I was nesting buttons (the accordion trigger is a button, and I tried to mimic the spec, which caused hydration issues due to the nested buttons). It was quite a bit of brain power put to the relationship of those two component families ultimately scrapped.
 
-Besides tailwind, the stack was new for me (`app` router instead of `pages` router for Next was used). Shadcn proved intuitive and easy. Besides that, there were great learnings across the board. 
+react query was avoided. Originally, I tried server side caching. Then I realized this was a nightmarish choice. It would require a lot of manual revalidation. On top of that, research provided that caching with Auth headers can cause data leaks - so let's not do that! Instead, I added the connection id to the path so I could utliize the client side cache. This was a much better choice. To make knowledge bases selectable, we will need to add knowledge bases onto the router before connections, since a knowledge base can only have one connection at a time. I avoided this for now since it wasn't the focus of the task.
 
-There's some stuff wrong with the app. The most egregious issue is that on `sync` the checkboxes do not uncheck. I ran out of time, though I will say my component structure makes it more complicated than it likely needs to be to remove those checks. Next step, I would probably try and optimistic state update from the server action that propogates through the component tree to uncheck the boxes. The optimistic state should revert once the server action finishes (from what I understand). The main component is a recursively calling component. I think it works fine, and the key takeaway for me was removing as much duplicated code as possible between the directory and file entries, while still letting directories behave as directories. 
+Some of the APIs needed for this task needed to be obtained/interpreted from your site. For example, updating a knowledge base was a PUT requiring (seemingly) the same set of data as a POST. This was not detailed in your docs, but easy enough to investigate.
 
-Additionally, I am missing the knowledge base functionality. You can create knowledge bases, but even the feedback for creation is lacking. Next steps would've been interesting, though a bit unclear. For resources added to the knowledge base, I was planning on outlining in green and putting a small checkmark on the top right corner of the box. I would likely just add  "stored" next to the item before that though to make it quicker. It seems there was also a need to be able to sync / desync files/directories as well as remove them altogether from the sync screen. Shadcn makes menu buttons a breeze, so I would add a menu button for removing permanently from the view.
+There seems to be a server error with your sync endpoint, though it doesn't exist on your site. Triggering the same URL from my domain causes a 500 error. We can debug this together if you want. I forced no caching to test caching errors, and I also tried various lengths of pause before calling sync to see if the problem had to do with a race condition - neither were the case. This server error means that although I add the resources to the knowledge base, there is no way to sync the knowledge base, and therefor the knowledge base fetch itself is stale and never updates to show what is actually indexed. Due to this, instead of finishing the functionality, I chose to update the structure with my limited time to be more extensible. On top of that, originally I did not actually add documents to a knowledge base, I always created new ones with the list (you have a lot of knowledge bases on that account now lol).
+
+My updated structure included updates to the api calls. There is a bit of a dangling generalization for resource fetching, as the knowledge base resource fetch and google connection resource fetch were very similar. I didn't complete it since the queryParams were a bit different, and I wanted to focus my limited extra time elsewhere.
+
+Caught a bug where empty directories would explode the app, so now we can handle empty directories. The accordion plays an obnoxious animation, but we could probably force a closed or opened state when it is empty, or otherwise not render the accordion at all.
+
+Happier overall with code structure. The "Google Drive" entry remains a sore spot where I am filling the `Directory` component with side effects for a one off situation. I think I'd rather duplicate the structure for the one off than complicate the logic so much.
+
+
 
 
 # Running the app
@@ -25,14 +33,14 @@ A simple `npm run dev` should do the trick!
 # Development
 
 ## TODO
+- [x] Add syncing of drive docs to knowledge base (kb indexing)
+- [x] use Optimistic to update the UI for the user, and stack syncing with create
+- [x] ensure caching is properly enabled. i.e., client side caching 
+- [x] test new redirect from authjs callback
+- [x] update auth types based on guide
 - [ ] deindex for drive docs list
-- [ ] Add syncing of drive docs to knowledge base (kb indexing)
-  - [ ] use Optimistic to update the UI for the user, and stack syncing with create
 - [ ] add synced indicator for synced files
 - [ ] ensure unsynced state is updated as well
-- [ ] ensure caching is properly enabled. Caching should happen for ids, no?
-- [ ] test new redirect from authjs callback
-- [ ] update auth types based on guide
 - [ ] rotate tokens
 
 ### If time
@@ -40,18 +48,3 @@ A simple `npm run dev` should do the trick!
 - [ ] sort by name
 - [ ] filter by name
 - [ ] search by name
-
-## Notes
-Some of the apis are missing from the spec, so I needed to go to the site to grab them from the network. One of them was confirming the correct `put` for syncing file sources
-
-I went about caching wrong originally. I was concerned with caching the calls to the db, but by putting the ids onto the routes, I can now cache route calls, avoiding the issue with Authorization caching. The auth header caching was likely a data leak issue. Poor form there lol. Lets just use the client side cache for these since they are fully rendered server side. So, the updated routes with slug is to make use of the client router cache
-
-A trickiness is the relationship between knowledge bases and connections, which I assume to be many to many...so...how do we cache with the client router? 
-
-Knowledge base needs to be shimmed in front of connections I suppose?
-
-Caught a bug where an empty directory would cause the app to explode since I was trying to convert a nonexistent property `directoryEntries` into an interable 
-
-stop propogation on click makes it possible to toggle the dropdown and not hit the box, which is not great
-
-context causes all children to rerender...might not be a great solution here

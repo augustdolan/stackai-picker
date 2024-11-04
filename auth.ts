@@ -1,6 +1,44 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { JWT } from "next-auth/jwt"
 
+declare module "next-auth/jwt" {
+  /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
+  interface JWT {
+    /** OpenID ID Token */
+    accessToken: string
+    orgId: string
+    user: {
+      id: string
+    }
+  }
+}
+declare module "next-auth" {
+  /**
+   * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
+   */
+  interface User {
+    user: {
+      id: string
+    },
+    access_token: string,
+    org_id: string
+  }
+  interface Token {
+    user: {
+      id: string
+    },
+    access_token: string,
+    orgId: string
+  }
+  interface Session {
+    orgId: string,
+    accessToken: string,
+    user: {
+      id: string
+    }
+  }
+}
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: '/sign-in',
@@ -12,21 +50,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     jwt({ user, token }) {
       if (user) {
-        // @ts-expect-error needed to extend the session, no quick way to extend type
         token.user = { id: user.user.id }
-        // @ts-expect-error needed to extend the session, no quick way to extend type
         token.accessToken = user.access_token
-        // @ts-expect-error needed to extend the session, no quick way to extend type
         token.orgId = user.org_id
       }
       return token;
     },
     async session({ session, token }) {
-      // @ts-expect-error needed to extend the session, no quick way to extend type
       session.orgId = token.orgId;
       // @ts-expect-error needed to extend the session, no quick way to extend type
       session.user = { id: token.user.id };
-      // @ts-expect-error needed to extend the session, no quick way to extend type
       session.accessToken = token.accessToken;
       return session;
     }

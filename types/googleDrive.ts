@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react"
+
 export type ConnectionInfo = {
   name: 'Gdrive connection' | string,
   connection_id: string,
@@ -41,7 +43,10 @@ export type DriveResource = DirectoryDriveResource | FileDriveResource;
 
 export type ResourcesByDirectory = {
   resourceData: DriveResource,
-  directoryEntries: Record<string, ResourcesByDirectory>,
+  directoryEntries: {
+    directories: Record<string, ResourcesByDirectory>,
+    files: Record<string, { resourceData: DriveResource }>, // technically no resources directory and should update type
+  },
 }
 export function isDirectory(driveResource: DriveResource): driveResource is DirectoryDriveResource {
   return driveResource.inode_type === "directory";
@@ -49,4 +54,4 @@ export function isDirectory(driveResource: DriveResource): driveResource is Dire
 
 export type ResourcesView = FileDriveResource | DirectoryDriveResource & { directoryEntries: ResourcesView };
 
-export type CheckedChangeHandler = (checkedState: string | boolean, resourceId: string) => void;
+export type CheckedChangeHandler = ({ isParentChecked, checkedState, resourceId, setChecked }: { isParentChecked: string | boolean, checkedState: boolean | "indeterminate", resourceId: string, setChecked: Dispatch<SetStateAction<boolean>> }) => void;
