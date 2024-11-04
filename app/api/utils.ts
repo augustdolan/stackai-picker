@@ -8,7 +8,6 @@ export async function stackAiFetch<T>(slug: string, config?: RequestInit) {
     },
     headers: {
       ...config?.headers,
-      // @ts-expect-error needed to extend the session, no quick way to extend type
       "Authorization": `Bearer ${session?.accessToken}`,
       "Content-Type": "application/json",
     }
