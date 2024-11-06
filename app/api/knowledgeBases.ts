@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { stackAiFetch } from "@/app/api/utils";
 import { getConnections } from "@/app/api/connections";
 import { DriveResource } from "@/types/googleDrive";
-import { revalidatePath } from "next/cache";
+// import { revalidatePath } from "next/cache";
 
 const defaultKnowledgeBaseId = "2ee47c79-f0c3-4cc0-af7a-ab2e479969a6";
 
@@ -15,16 +15,10 @@ export async function getAllKnowledgeBaseResources(knowledgeBaseId = defaultKnow
 }
 export async function syncToKnowledgeBase(knowledgeBaseId: string = defaultKnowledgeBaseId) {
   const session = await auth();
-  return new Promise((resolve) => {
-    // set timeout was to see if we need to wait a moment before syncing. Tested 15 seconds, was no help
-    setTimeout(async () => {
-      const syncResponse = await stackAiFetch(`knowledge_bases/sync/trigger/${knowledgeBaseId}/${session?.orgId}`, {
-        method: "GET",
-      })
-      return resolve(syncResponse);
-    }, 1000)
-
+  const syncResponse = await stackAiFetch(`knowledge_bases/sync/trigger/${knowledgeBaseId}/${session?.orgId}`, {
+    method: "GET",
   })
+  return syncResponse;
 }
 
 export async function createKnowledgeBase(selectedResources: Set<string>) {
@@ -59,7 +53,6 @@ export async function createKnowledgeBase(selectedResources: Set<string>) {
 // should update app directory to put knowledge base in URL...likely as a path before connection since there a many to one relationship with connections...
 export async function updateKnowledgeBase({ knowledgeBaseId = defaultKnowledgeBaseId, selectedResources, connectionId }: { knowledgeBaseId?: string, selectedResources: Set<string>, connectionId: string }) {
   const session = await auth();
-
   await stackAiFetch(`knowledge_bases/${knowledgeBaseId}`, {
     method: "PUT",
     body: JSON.stringify({
@@ -86,7 +79,7 @@ export async function updateKnowledgeBase({ knowledgeBaseId = defaultKnowledgeBa
   // this fetch is currently fetching outdated info, as the syncToKnowledge base is always 500ing
   const knowledgeBaseResources = await getAllKnowledgeBaseResources(knowledgeBaseId);
   // not making use of return since it is outdated
-  revalidatePath(`/connections/${connectionId}`, "page");
+  // revalidatePath(`/connections/${connectionId}`, "page");
   return knowledgeBaseResources;
 }
 
