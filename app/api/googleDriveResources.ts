@@ -16,7 +16,7 @@ export async function getAllResources(resourceSlug: string) {
   ])
   const allResourceWithKbInfo: DriveResourceWithKnowledgeBaseInfo[] = allResources.map(resource => {
     // Would use the id, but it seems the KB id may be a shim
-    const foundInKb = knowledgeBaseResources.find(knowledgeBaseResource => knowledgeBaseResource.inode_path.path === resource.inode_path.path);
+    const foundInKb = knowledgeBaseResources?.find(knowledgeBaseResource => knowledgeBaseResource.inode_path.path === resource.inode_path.path);
     return {
       ...resource,
       isInKnowledgeBase: foundInKb !== undefined,

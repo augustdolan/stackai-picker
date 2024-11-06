@@ -28,13 +28,13 @@ export async function syncToKnowledgeBase(knowledgeBaseId: string = defaultKnowl
 }
 
 export async function createKnowledgeBase(selectedResources: Set<string>) {
-  const [connection] = await getConnections();
+  const connections = await getConnections();
   const knowledgeBase = await stackAiFetch("knowledge_bases", {
     method: "POST",
     body: JSON.stringify({
       connection_source_ids: Array.from(selectedResources),
       description: "test description",
-      connection_id: connection.connection_id,
+      connection_id: connections[0].connection_id,
       indexing_params: {
         ocr: false,
         unstructured: true,
