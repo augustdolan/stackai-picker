@@ -3,9 +3,7 @@ export async function stackAiFetch<T>(slug: string, config?: RequestInit) {
   const session = await auth();
   const response = await fetch(`${process.env.STACKAI_BACKEND_URL}/${slug}`, {
     ...config,
-    next: {
-      revalidate: 3600, // generally, refetch all calls at most every hour
-    },
+    cache: "no-cache",
     headers: {
       ...config?.headers,
       "Authorization": `Bearer ${session?.accessToken}`,

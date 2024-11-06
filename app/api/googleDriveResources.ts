@@ -1,20 +1,29 @@
 import { stackAiFetch } from "@/app/api/utils"
 import { DriveResource, ResourcesByDirectory } from "@/types/googleDrive";
+import { getAllKnowledgeBaseResources } from "./knowledgeBases";
 
 export async function getAllDriveResources(connectionId: string) {
   const resourcesByDirectories = await getAllResources(`connections/${connectionId}`);
   return resourcesByDirectories;
 }
 
-// only fetched root because there seems to be a bug with syncing that always results in a 500 error
-export async function getAllKnowledgeBaseResources(knowledgeBaseId: string) {
-  const rootResources: DriveResource[] = await stackAiFetch(`knowledge_bases/${knowledgeBaseId}/resources/children?resource_path=/`)
-  return rootResources;
-}
 export async function getAllResources(resourceSlug: string) {
+  // could speed this up with a Promise.all and put a .then on root resources
   const rootResources: DriveResource[] = await stackAiFetch(`${resourceSlug}/resources/children`)
-  const allResources = await fetchInnerResources(rootResources, resourceSlug)
-  const resourcesByDirectory = organizeByDirectory(allResources);
+  const [knowledgeBaseResources, allResources] = await Promise.all([
+    getAllKnowledgeBaseResources(),
+    fetchInnerResources(rootResources, resourceSlug)
+  ])
+  const allResourceWithKbInfe = allResources.map(resource => {
+    // Would use the id, but it seems the KB id may be a shim
+    if (knowledgeBaseResources.find(knowledgeBaseResource => knowledgeBaseResource.inode_path.path === resource.inode_path.path)) {
+      resource.isInKnowledgeBase = true;
+    } else {
+      resource.isInKnowledgeBase = false;
+    }
+    return resource;
+  })
+  const resourcesByDirectory = organizeByDirectory(allResourceWithKbInfe);
   return resourcesByDirectory;
 }
 
