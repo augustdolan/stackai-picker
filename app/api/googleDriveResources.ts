@@ -1,5 +1,5 @@
 import { stackAiFetch } from "@/app/api/utils"
-import { DriveResource, ResourcesByDirectory } from "@/types/googleDrive";
+import { DriveResource, DriveResourceWithKnowledgeBaseInfo, ResourcesByDirectory } from "@/types/googleDrive";
 import { getAllKnowledgeBaseResources } from "./knowledgeBases";
 
 export async function getAllDriveResources(connectionId: string) {
@@ -14,16 +14,15 @@ export async function getAllResources(resourceSlug: string) {
     getAllKnowledgeBaseResources(),
     fetchInnerResources(rootResources, resourceSlug)
   ])
-  const allResourceWithKbInfe = allResources.map(resource => {
+  const allResourceWithKbInfo: DriveResourceWithKnowledgeBaseInfo[] = allResources.map(resource => {
     // Would use the id, but it seems the KB id may be a shim
-    if (knowledgeBaseResources.find(knowledgeBaseResource => knowledgeBaseResource.inode_path.path === resource.inode_path.path)) {
-      resource.isInKnowledgeBase = true;
-    } else {
-      resource.isInKnowledgeBase = false;
-    }
-    return resource;
+    const foundInKb = knowledgeBaseResources.find(knowledgeBaseResource => knowledgeBaseResource.inode_path.path === resource.inode_path.path);
+    return {
+      ...resource,
+      isInKnowledgeBase: foundInKb !== undefined,
+    };
   })
-  const resourcesByDirectory = organizeByDirectory(allResourceWithKbInfe);
+  const resourcesByDirectory = organizeByDirectory(allResourceWithKbInfo);
   return resourcesByDirectory;
 }
 
@@ -51,11 +50,11 @@ async function fetchInnerResources(resources: DriveResource[], resourceSlug: str
 }
 
 // non-ideal organization
-function organizeByDirectory(resources: DriveResource[]): ResourcesByDirectory {
+function organizeByDirectory(resources: DriveResourceWithKnowledgeBaseInfo[]): ResourcesByDirectory {
   const resourceData = {
     resource_id: "SHIMROOTID",
     inode_path: { path: "poor/default/to/prevent/select/all" },
-  } as DriveResource;
+  } as DriveResourceWithKnowledgeBaseInfo;
   const resourcesByDirectory: ResourcesByDirectory = {
     resourceData, directoryEntries: {
       files: {},
@@ -87,7 +86,7 @@ function organizeByDirectory(resources: DriveResource[]): ResourcesByDirectory {
       } else {
         if (currentDirectoryEntriesPath.directories[currentSubPathName] === undefined) {
           currentDirectoryEntriesPath.directories[currentSubPathName] = {
-            resourceData: {} as DriveResource,
+            resourceData: {} as DriveResourceWithKnowledgeBaseInfo,
             directoryEntries: {
               files: {},
               directories: {},

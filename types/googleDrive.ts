@@ -40,12 +40,13 @@ export type FileDriveResource = DriveResourceBase & {
 }
 
 export type DriveResource = DirectoryDriveResource | FileDriveResource;
+export type DriveResourceWithKnowledgeBaseInfo = DriveResource & { isInKnowledgeBase: boolean };
 
 export type ResourcesByDirectory = {
-  resourceData: DriveResource,
+  resourceData: DriveResourceWithKnowledgeBaseInfo,
   directoryEntries: {
     directories: Record<string, ResourcesByDirectory>,
-    files: Record<string, { resourceData: DriveResource }>, // technically no resources directory and should update type
+    files: Record<string, { resourceData: DriveResourceWithKnowledgeBaseInfo }>, // technically no resources directory and should update type
   },
 }
 export function isDirectory(driveResource: DriveResource): driveResource is DirectoryDriveResource {

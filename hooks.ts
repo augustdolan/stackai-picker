@@ -1,8 +1,9 @@
-import { Dispatch, SetStateAction, useContext, useEffect } from "react";
-import { CheckedChangeContext, IsSelectAll, ShouldReset } from "@/context";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { CheckedChangeContext, IsSelectAll, OptimisticIsSyncing, ShouldReset } from "@/context";
 
-export function useResourceSelectionEffects({ isParentChecked, resourceId, setChecked, pathParts }: { isParentChecked: boolean, resourceId: string, setChecked: Dispatch<SetStateAction<boolean>>, pathParts: string[] }) {
+export function useResourceSelectionEffects({ checked, setIsInKnowledgeBase, isParentChecked, resourceId, setChecked, pathParts }: { checked: boolean, setIsInKnowledgeBase: Dispatch<SetStateAction<boolean>>, isParentChecked: boolean, resourceId: string, setChecked: Dispatch<SetStateAction<boolean>>, pathParts: string[] }) {
   const checkedChangeHandler = useContext(CheckedChangeContext);
+  const optimizedIsSyncing = useContext(OptimisticIsSyncing);
   const shouldReset = useContext(ShouldReset);
   useEffect(() => {
     if (shouldReset) {
@@ -21,5 +22,19 @@ export function useResourceSelectionEffects({ isParentChecked, resourceId, setCh
     }
   }, [isSelectAll, pathParts.length, resourceId])
 
+
+  const [alreadyFlipped, setAlreadyFlipped] = useState(false);
+  useEffect(() => {
+    if (optimizedIsSyncing && !alreadyFlipped) {
+      setAlreadyFlipped(true)
+      if (checked) {
+        setIsInKnowledgeBase(true);
+      } else {
+        setIsInKnowledgeBase(false)
+      }
+    } else if (!optimizedIsSyncing) {
+      setAlreadyFlipped(false);
+    }
+  }, [optimizedIsSyncing, checked])
 }
 

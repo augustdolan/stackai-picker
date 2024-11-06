@@ -14,7 +14,7 @@ import { useParams } from "next/navigation";
 
 import { CheckedChangeHandler, ResourcesByDirectory } from "@/types/googleDrive";
 import { updateKnowledgeBase } from "@/app/api/knowledgeBases";
-import { CheckedChangeContext, IsSelectAll, ShouldReset } from "@/context";
+import { CheckedChangeContext, IsSelectAll, OptimisticIsSyncing, ShouldReset } from "@/context";
 import Directory from "@/components/connections/Directory";
 
 
@@ -29,11 +29,11 @@ export default function ConnectionResourceList({ resources }: { resources: Resou
     return true;
   });
   useEffect(() => {
-    if (shouldReset) {
+    if (shouldReset && !optimisticIsSyncing) {
       setIsSelectAll(false);
       setShouldReset(false);
     }
-  }, [shouldReset]);
+  }, [shouldReset, optimisticIsSyncing]);
   const [selectedResources, setSelectedResources] = useState(new Set<string>());
   const checkedChangeHandler: CheckedChangeHandler = ({ isParentChecked, checkedState, resourceId, setChecked }) => {
     setChecked(Boolean(checkedState)); // force indeterminate to be true
@@ -78,6 +78,7 @@ export default function ConnectionResourceList({ resources }: { resources: Resou
                   toast("Success!", {
                     description: "knowledge base created",
                   })
+
                   setShouldReset(true);
 
                 } catch (error) {
@@ -95,13 +96,15 @@ export default function ConnectionResourceList({ resources }: { resources: Resou
             >
               <Accordion type="single" value={resources.resourceData.resource_id}>
                 <AccordionItem value={resources.resourceData.resource_id}>
-                  <CheckedChangeContext.Provider value={checkedChangeHandler}>
-                    <ShouldReset.Provider value={shouldReset}>
-                      <IsSelectAll.Provider value={isSelectAll}>
-                        <Directory isParentChecked={false} directoryName={"Google Drive"} directoryInfo={resources} />
-                      </IsSelectAll.Provider>
-                    </ShouldReset.Provider>
-                  </CheckedChangeContext.Provider>
+                  <OptimisticIsSyncing.Provider value={optimisticIsSyncing}>
+                    <CheckedChangeContext.Provider value={checkedChangeHandler}>
+                      <ShouldReset.Provider value={shouldReset}>
+                        <IsSelectAll.Provider value={isSelectAll}>
+                          <Directory isParentChecked={false} directoryName={"Google Drive"} directoryInfo={resources} />
+                        </IsSelectAll.Provider>
+                      </ShouldReset.Provider>
+                    </CheckedChangeContext.Provider>
+                  </OptimisticIsSyncing.Provider>
                 </AccordionItem>
               </Accordion>
             </form>

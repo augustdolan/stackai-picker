@@ -1,4 +1,4 @@
-import { CheckedChangeContext } from "@/context";
+import { CheckedChangeContext, OptimisticIsSyncing } from "@/context";
 import { useResourceSelectionEffects } from "@/hooks";
 import { ResourcesByDirectory } from "@/types/googleDrive";
 import { useContext, useState } from "react";
@@ -14,13 +14,15 @@ export default function Directory({ isParentChecked, directoryName, directoryInf
   const files = Object.entries(directoryInfo.directoryEntries.files);
   const directories = Object.entries(directoryInfo.directoryEntries.directories);
   const [checked, setChecked] = useState(false);
-  useResourceSelectionEffects({ isParentChecked, resourceId, setChecked, pathParts: info.inode_path.path.split("/") });
+  const optimisticIsSyncing = useContext(OptimisticIsSyncing);
+  const [isInKnowledgeBase, setIsInKnowledgeBase] = useState(directoryInfo.resourceData.isInKnowledgeBase);
+  useResourceSelectionEffects({ isParentChecked, resourceId, setChecked, pathParts: info.inode_path.path.split("/"), checked, setIsInKnowledgeBase });
   return (
     <>
       <div className="resource-info">
-        {directoryName !== "Google Drive" && <Checkbox onClick={((e) => e.stopPropagation())} disabled={isParentChecked} checked={isParentChecked || checked} onCheckedChange={(checkedState) => { checkedChangeHandler({ isParentChecked, checkedState, resourceId, setChecked }) }} className="self-center" />}
+        {directoryName !== "Google Drive" && <Checkbox onClick={((e) => e.stopPropagation())} disabled={optimisticIsSyncing || isParentChecked} checked={isParentChecked || checked} onCheckedChange={(checkedState) => { checkedChangeHandler({ isParentChecked, checkedState, resourceId, setChecked }) }} className="self-center" />}
         <AccordionTrigger className="flex content-center gap-2" >
-          <ResourceData isFile={false} resourceName={directoryName} resourceMetadata={info} />
+          <ResourceData isFile={false} isInKnowledgeBase={isInKnowledgeBase} resourceName={directoryName} />
         </AccordionTrigger>
       </div>
       <AccordionContent className="pl-8">
