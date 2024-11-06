@@ -28,10 +28,23 @@ export default function ConnectionResourceList({ resources }: { resources: Resou
   const [optimisticIsSyncing, addOptimisicIsSyncing] = useOptimistic(false, () => {
     return true;
   });
+  const [wasSyncing, setWasSyncing] = useState(false);
   useEffect(() => {
     if (shouldReset && !optimisticIsSyncing) {
       setIsSelectAll(false);
       setShouldReset(false);
+    }
+
+    if (optimisticIsSyncing) {
+      setWasSyncing(true);
+    }
+
+    if (!optimisticIsSyncing && wasSyncing) {
+      toast("Success!", {
+        description: "knowledge base created",
+      })
+      setShouldReset(true);
+      setWasSyncing(false);
     }
   }, [shouldReset, optimisticIsSyncing]);
   const [selectedResources, setSelectedResources] = useState(new Set<string>());
@@ -75,12 +88,6 @@ export default function ConnectionResourceList({ resources }: { resources: Resou
                 try {
                   // synced and updated kb resources would be returned here, and then a light gray text would say "Indexed" for indexed ones
                   await updateKnowledgeBase({ selectedResources, connectionId })
-                  toast("Success!", {
-                    description: "knowledge base created",
-                  })
-
-                  setShouldReset(true);
-
                 } catch (error) {
                   if (error instanceof Error) {
                     toast("Error!", {
