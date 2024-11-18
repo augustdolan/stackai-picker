@@ -1,6 +1,7 @@
 import { getResources } from "@/app/api/googleDriveResources";
 import { Suspense } from "react";
 import InteractiveDirectory from "@/components/connections/InteractiveDirectory";
+import { Skeleton } from "../ui/skeleton";
 
 // children are directories
 export default async function Directory({ pathParts, connectionId, resourceId }: { pathParts: string[], connectionId: string, resourceId: string }) {
@@ -10,7 +11,7 @@ export default async function Directory({ pathParts, connectionId, resourceId }:
   return (
     <InteractiveDirectory pathParts={pathParts} resourceId={resourceId} files={files}>
       {directories.map((directory) => (
-        <Suspense key={directory.resource_id} fallback={<div>Loading...</div>}>
+        <Suspense key={directory.resource_id} fallback={<Skeleton className="resource-info" />}>
           <Directory connectionId={connectionId} pathParts={directory.inode_path.path.split("/")} resourceId={directory.resource_id} />
         </Suspense>
       ))}
