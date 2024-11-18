@@ -1,21 +1,19 @@
 import { CheckedChangeContext, OptimisticIsSyncing } from "@/context";
 import { useResourceSelectionEffects } from "@/hooks";
-import { DriveResourceWithKnowledgeBaseInfo } from "@/types/googleDrive";
 import { useContext, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import ResourceData from "@/components/connections/ResourceData";
 
-export default function File({ isParentChecked, fileName, fileMetadata }: { isParentChecked: boolean, fileName: string, fileMetadata: { resourceData: DriveResourceWithKnowledgeBaseInfo } }) {
-  const resourceId = fileMetadata.resourceData.resource_id;
+export default function File({ isParentChecked, name, originalIsInKnowledgeBase, pathParts }: { isParentChecked: boolean, name: string, pathParts: string[], originalIsInKnowledgeBase: boolean }) {
   const [checked, setChecked] = useState(false);
-  const [isInKnowledgeBase, setIsInKnowledgeBase] = useState(fileMetadata.resourceData.isInKnowledgeBase);
+  // const [isInKnowledgeBase, setIsInKnowledgeBase] = useState(originalIsInKnowledgeBase);
   const optimisticIsSyncing = useContext(OptimisticIsSyncing);
-  useResourceSelectionEffects({ isParentChecked, resourceId, setChecked, pathParts: fileMetadata.resourceData.inode_path.path.split("/"), checked, setIsInKnowledgeBase });
+  useResourceSelectionEffects({ isParentChecked, resourceId: name, setChecked, pathParts, checked, setIsInKnowledgeBase: () => { } });
   const checkedChangeHandler = useContext(CheckedChangeContext);
   return (
-    <div className="resource-info" key={fileMetadata.resourceData.resource_id}>
-      <Checkbox onClick={((e) => e.stopPropagation())} checked={isParentChecked || checked} disabled={optimisticIsSyncing || isParentChecked} onCheckedChange={(checkedState) => { checkedChangeHandler({ isParentChecked, checkedState, resourceId, setChecked }) }} className="self-center" />
-      <ResourceData isInKnowledgeBase={isInKnowledgeBase} isFile={true} resourceName={fileName} />
+    <div className="resource-info">
+      <Checkbox onClick={((e) => e.stopPropagation())} checked={isParentChecked || checked} disabled={optimisticIsSyncing || isParentChecked} onCheckedChange={(checkedState) => { checkedChangeHandler({ isParentChecked, checkedState, resourceId: name, setChecked }) }} className="self-center" />
+      <ResourceData isInKnowledgeBase={false} isFile={true} resourceName={pathParts[pathParts.length - 1]} />
     </div>
   );
 }

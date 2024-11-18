@@ -18,7 +18,7 @@ import { CheckedChangeContext, IsSelectAll, OptimisticIsSyncing, ShouldReset } f
 import Directory from "@/components/connections/Directory";
 
 
-export default function ConnectionResourceList({ resources }: { resources: ResourcesByDirectory }) {
+export default function ConnectionResourceList({ children }: { children: React.ReactNode }) {
   const { connectionId } = useParams();
   if (Array.isArray(connectionId)) {
     throw new Error("component unrenderable at path, please contact support regarding this bug");
@@ -48,6 +48,7 @@ export default function ConnectionResourceList({ resources }: { resources: Resou
     }
   }, [shouldReset, optimisticIsSyncing]);
   const [selectedResources, setSelectedResources] = useState(new Set<string>());
+  console.log(selectedResources);
   const checkedChangeHandler: CheckedChangeHandler = ({ isParentChecked, checkedState, resourceId, setChecked }) => {
     setChecked(Boolean(checkedState)); // force indeterminate to be true
     setSelectedResources((prev) => {
@@ -101,13 +102,13 @@ export default function ConnectionResourceList({ resources }: { resources: Resou
                 }
               }}
             >
-              <Accordion type="single" value={resources.resourceData.resource_id}>
-                <AccordionItem value={resources.resourceData.resource_id}>
+              <Accordion type="single">
+                <AccordionItem value="Root Accordion">
                   <OptimisticIsSyncing.Provider value={optimisticIsSyncing}>
                     <CheckedChangeContext.Provider value={checkedChangeHandler}>
                       <ShouldReset.Provider value={shouldReset}>
                         <IsSelectAll.Provider value={isSelectAll}>
-                          <Directory isParentChecked={false} directoryName={"Google Drive"} directoryInfo={resources} />
+                          {children}
                         </IsSelectAll.Provider>
                       </ShouldReset.Provider>
                     </CheckedChangeContext.Provider>

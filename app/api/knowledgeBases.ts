@@ -3,16 +3,15 @@ import { auth } from "@/auth";
 import { stackAiFetch } from "@/app/api/utils";
 import { getConnections } from "@/app/api/connections";
 import { DriveResource } from "@/types/googleDrive";
-// import { revalidatePath } from "next/cache";
 
 const defaultKnowledgeBaseId = "2ee47c79-f0c3-4cc0-af7a-ab2e479969a6";
 
-// only fetched root because there seems to be a bug with syncing that always results in a 500 error
 // TODO: create single responsibility for core rsource fetching between google and kb
 export async function getAllKnowledgeBaseResources(knowledgeBaseId = defaultKnowledgeBaseId) {
   const rootResources: DriveResource[] = await stackAiFetch(`knowledge_bases/${knowledgeBaseId}/resources/children?resource_path=/`)
   return rootResources;
 }
+
 export async function syncToKnowledgeBase(knowledgeBaseId: string = defaultKnowledgeBaseId) {
   const session = await auth();
   const syncResponse = await stackAiFetch(`knowledge_bases/sync/trigger/${knowledgeBaseId}/${session?.orgId}`, {
@@ -74,12 +73,8 @@ export async function updateKnowledgeBase({ knowledgeBaseId = defaultKnowledgeBa
       },
     }),
   })
-  // 500ing and difficult to debug. ensured the call was the same as on your site. The 500 return also isn't returned as JSON, which causes a crash
   await syncToKnowledgeBase(knowledgeBaseId);
-  // this fetch is currently fetching outdated info, as the syncToKnowledge base is always 500ing
   const knowledgeBaseResources = await getAllKnowledgeBaseResources(knowledgeBaseId);
-  // not making use of return since it is outdated
-  // revalidatePath(`/connections/${connectionId}`, "page");
   return knowledgeBaseResources;
 }
 

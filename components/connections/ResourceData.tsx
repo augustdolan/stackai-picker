@@ -4,7 +4,8 @@ import { Label } from "@/components/ui/label";
 import { OptimisticIsSyncing } from "@/context";
 import { useContext } from "react";
 
-export default function ResourceData({ resourceName, isInKnowledgeBase, isFile }: { resourceName: string, isInKnowledgeBase: boolean, isFile: boolean }) {
+// need to redo isInKnowledgeBase and therefor remove optional
+export default function ResourceData({ resourceName, isInKnowledgeBase, isFile }: { resourceName: string, isInKnowledgeBase?: boolean, isFile: boolean }) {
   const optimizedIsSyncing = useContext(OptimisticIsSyncing);
   return (
     <div className="p-4 flex justify-center gap-2">
