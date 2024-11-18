@@ -1,5 +1,5 @@
 import { stackAiFetch } from "@/app/api/utils"
-import { DriveResource, DriveResourceWithKnowledgeBaseInfo, ResourcesByDirectory } from "@/types/googleDrive";
+import { DriveResource } from "@/types/googleDrive";
 
 export async function getResources({ connectionId, resourceId }: { connectionId: string, resourceId: string }) {
   const resource = await stackAiFetch<DriveResource[]>(`connections/${connectionId}/resources/children?resource_id=${resourceId}`)

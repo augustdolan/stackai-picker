@@ -6,9 +6,10 @@ import ResourceData from "@/components/connections/ResourceData";
 
 export default function File({ isParentChecked, name, originalIsInKnowledgeBase, pathParts }: { isParentChecked: boolean, name: string, pathParts: string[], originalIsInKnowledgeBase: boolean }) {
   const [checked, setChecked] = useState(false);
-  // const [isInKnowledgeBase, setIsInKnowledgeBase] = useState(originalIsInKnowledgeBase);
+  const [isInKnowledgeBase, setIsInKnowledgeBase] = useState(originalIsInKnowledgeBase);
+  console.log(isInKnowledgeBase, setIsInKnowledgeBase);
   const optimisticIsSyncing = useContext(OptimisticIsSyncing);
-  useResourceSelectionEffects({ isParentChecked, resourceId: name, setChecked, pathParts, checked, setIsInKnowledgeBase: () => { } });
+  useResourceSelectionEffects({ isParentChecked, resourceId: name, setChecked, pathParts, checked, setIsInKnowledgeBase });
   const checkedChangeHandler = useContext(CheckedChangeContext);
   return (
     <div className="resource-info">

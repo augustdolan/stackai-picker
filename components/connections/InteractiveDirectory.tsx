@@ -1,7 +1,6 @@
 "use client"
 import { CheckedChangeContext, IsParentChecked, OptimisticIsSyncing } from "@/context";
 import { useResourceSelectionEffects } from "@/hooks";
-import { ResourcesByDirectory } from "@/types/googleDrive";
 import { useContext, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";

@@ -12,15 +12,14 @@ import { toast } from "sonner";
 import { InfoIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 
-import { CheckedChangeHandler, ResourcesByDirectory } from "@/types/googleDrive";
+import { CheckedChangeHandler } from "@/types/googleDrive";
 import { updateKnowledgeBase } from "@/app/api/knowledgeBases";
 import { CheckedChangeContext, IsSelectAll, OptimisticIsSyncing, ShouldReset } from "@/context";
-import Directory from "@/components/connections/Directory";
 
 
 export default function ConnectionResourceList({ children }: { children: React.ReactNode }) {
   const { connectionId } = useParams();
-  if (Array.isArray(connectionId)) {
+  if (!connectionId || Array.isArray(connectionId)) {
     throw new Error("component unrenderable at path, please contact support regarding this bug");
   }
   const [shouldReset, setShouldReset] = useState(false);
