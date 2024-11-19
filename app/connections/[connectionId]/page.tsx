@@ -1,5 +1,5 @@
 import ConnectionResourceList from "@/components/connections/ConnectionResourceList";
-import RootDirectory from "@/components/connections/RootDirectory";
+import Directory from "@/components/connections/Directory";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
@@ -12,7 +12,7 @@ export default async function Connection({ params }: { params: Promise<{ connect
       <Card className="relative p-8 h-2/3">
         <ConnectionResourceList>
           <Suspense fallback={<Skeleton className="h-4 w-50% m-2" />}>
-            <RootDirectory connectionId={connectionId} />
+            <Directory connectionId={connectionId} isRoot={true} />
           </Suspense>
         </ConnectionResourceList>
       </Card>

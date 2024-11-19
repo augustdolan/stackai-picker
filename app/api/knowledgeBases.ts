@@ -7,7 +7,7 @@ import { DriveResource } from "@/types/googleDrive";
 const defaultKnowledgeBaseId = "2ee47c79-f0c3-4cc0-af7a-ab2e479969a6";
 
 // TODO: create single responsibility for core rsource fetching between google and kb
-export async function getAllKnowledgeBaseResources(knowledgeBaseId = defaultKnowledgeBaseId) {
+export async function getKnowledgeBaseInfo({ knowledgeBaseId = defaultKnowledgeBaseId, }: { knowledgeBaseId?: string }) {
   const rootResources: DriveResource[] = await stackAiFetch(`knowledge_bases/${knowledgeBaseId}/resources/children?resource_path=/`)
   return rootResources;
 }
@@ -74,7 +74,7 @@ export async function updateKnowledgeBase({ knowledgeBaseId = defaultKnowledgeBa
     }),
   })
   await syncToKnowledgeBase(knowledgeBaseId);
-  const knowledgeBaseResources = await getAllKnowledgeBaseResources(knowledgeBaseId);
+  const knowledgeBaseResources = await getKnowledgeBaseInfo({ knowledgeBaseId });
   return knowledgeBaseResources;
 }
 

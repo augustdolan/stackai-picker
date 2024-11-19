@@ -3,12 +3,10 @@ import { CheckedChangeContext, IsParentChecked, OptimisticIsSyncing } from "@/co
 import { useResourceSelectionEffects } from "@/hooks";
 import { useContext, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ResourceData from "@/components/connections/ResourceData";
-import File from "@/components/connections/File";
-import { FileDriveResource } from "@/types/googleDrive";
 
-export default function InteractiveDirectory({ pathParts, children, files, resourceId }: { pathParts: string[], children: React.ReactNode, files: FileDriveResource[], resourceId: string }) {
+export default function InteractiveDirectory({ resourceId, pathParts, children }: { resourceId: string, pathParts: string[], children: React.ReactNode }) {
   const checkedChangeHandler = useContext(CheckedChangeContext);
   const isParentChecked = useContext(IsParentChecked);
   const [checked, setChecked] = useState(false);
@@ -24,14 +22,11 @@ export default function InteractiveDirectory({ pathParts, children, files, resou
           <ResourceData isFile={false} resourceName={pathParts[pathParts.length - 1]} />
         </AccordionTrigger>
       </div>
-      <AccordionContent className="px-8">
-        <Accordion type="multiple">
-          <IsParentChecked.Provider value={isParentChecked || checked}>
-            {children}
-          </IsParentChecked.Provider>
-        </Accordion>
-        {files.map((file) => <File key={file.resource_id} originalIsInKnowledgeBase={false} name={file.resource_id} pathParts={file.inode_path.path.split("/")} isParentChecked={checked} />)}
-      </AccordionContent>
+      <IsParentChecked.Provider value={isParentChecked || checked}>
+        <AccordionContent className="px-8">
+          {children}
+        </AccordionContent>
+      </IsParentChecked.Provider>
     </AccordionItem>
   )
 }

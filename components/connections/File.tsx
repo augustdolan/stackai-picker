@@ -1,13 +1,14 @@
-import { CheckedChangeContext, OptimisticIsSyncing } from "@/context";
+"use client"
+import { CheckedChangeContext, IsParentChecked, OptimisticIsSyncing } from "@/context";
 import { useResourceSelectionEffects } from "@/hooks";
 import { useContext, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import ResourceData from "@/components/connections/ResourceData";
 
-export default function File({ isParentChecked, name, originalIsInKnowledgeBase, pathParts }: { isParentChecked: boolean, name: string, pathParts: string[], originalIsInKnowledgeBase: boolean }) {
+export default function File({ name, originalIsInKnowledgeBase, pathParts }: { name: string, pathParts: string[], originalIsInKnowledgeBase: boolean }) {
   const [checked, setChecked] = useState(false);
-  const [isInKnowledgeBase, setIsInKnowledgeBase] = useState(originalIsInKnowledgeBase);
-  console.log(isInKnowledgeBase, setIsInKnowledgeBase);
+  const [, setIsInKnowledgeBase] = useState(originalIsInKnowledgeBase);
+  const isParentChecked = useContext(IsParentChecked);
   const optimisticIsSyncing = useContext(OptimisticIsSyncing);
   useResourceSelectionEffects({ isParentChecked, resourceId: name, setChecked, pathParts, checked, setIsInKnowledgeBase });
   const checkedChangeHandler = useContext(CheckedChangeContext);
